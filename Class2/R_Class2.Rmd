@@ -1,0 +1,264 @@
+---
+title: "Class 2 - Handling Tabular Data"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+
+## 1. Data Frames ##
+
+<br/>
+
+  - A **data frame** in R is the format used to store tables, particularly if it has mixed data types (e.g.  character (words) and numeric data).
+    
+  - Another common format to store data is a **matrix**, which should be only used to store data in a single form (character or numeric). 
+
+  - If this conditions are guarenteed one can change the format of a given table from dataframe to matrix (or vice-versa) using these functions:
+    - as.data.frame()
+    - as.matrix() 
+
+<br/>
+
+
+#### **1.1. Importing data to the R environment** ####
+
+R has multiple functions to import tabular data from a file (?read.table), that differ on the deafult values of the arguments:
+    
+    - read.table() : more generic, some default arguments need to be changed 
+    - read.csv() : for .csv files with values separated by ',' and '.' as decimal sign and header (default) 
+    - read.csv2() : for .csv files with values separated by ';' and ',' as decimal sign and header (default)
+    - read.delim() : for text files with 'tab' as separator and '.' as decimal sign and header (default)
+    - read.delim2() : for text files with 'tab' as separator and ',' as decimal sign and header (default)
+    
+
+```{r}
+# open root_length.csv using the wordpad and choose the best function to import the file
+root_l <- read.csv2("data/root_length.csv")
+
+head(root_l)
+```
+<br/>
+
+Root_l contains main root lengths from 40 plants from two different genotypes, identified in column 1. Each root was measured three times, with lengths displayed in columns 2 to 4. Column 5 has the number of lateral roots observed for each root.    
+
+<br/>
+Examples of functions that may be used to explore a dataframe by...
+
+...Size:
+
+    dim() - returns a vector with the number of rows in the first element, and the 
+      number of columns as the second element
+    nrow() - returns the number of rows 
+    ncol() - returns the number of columns
+
+...Content:
+
+    head() - shows the first 6 rows
+    tail() - shows the last 6 rows
+
+...Names:
+
+    names() - returns the column names (synonym of colnames())
+    rownames() - returns the row names
+
+...Summary:
+
+    str() - structure of the object and information about the class, length and content 
+      of each column
+    summary() - summary statistics for each column 
+
+<br/>
+
+#### **1.2. Manipulating/Mining data frames** ####
+
+We need to calculate the mean of the three measurements and the lateral root density (# lateral roots / mean length) 
+
+```{r}
+# Calculate mean of values in 3 columns
+
+rowMeans(root_l[,2:4])
+
+# To add this value to the data frame there are two options
+# Using cbind() function
+
+root_l1 <- cbind(root_l, mean_length = rowMeans(root_l[,2:4]))
+
+head(root_l1)
+# Using the $ operator Add a new column containing the mean of the three length measurements
+
+root_l$mean_length <- rowMeans(root_l[,2:4])
+head(root_l1)
+
+```
+<br/>
+
+```{r}
+# the elements of each column in root_l are in fact one dimension vectors of size 40
+# to calculate lateral root density just divide one column 5 by column 6
+
+root_l$Lat_roots / root_l$mean_length
+
+# this can be added to another column
+
+root_l$lat_root_density <- root_l$Lat_roots / root_l$mean_length
+head(root_l)
+```
+
+```{r}
+# to save this new data frame in another file
+# type ?write.table for more options
+
+write.csv(root_l,file="data/new_root_length.csv")
+
+```
+
+
+<br/>
+
+#### **1.3. Working with a real/inconsistent dataset** ####
+
+
+```{r}
+
+# Files with extension _d1 are the same but saved in different formats:
+# Ecoli_metadata_d1.txt : fields separated by tab '\t'
+# Ecoli_metadata_d1.txt : fields separated by tab ','
+
+# both these files were purposely damage to simulate a real case experience
+
+# Both these commands will cause an error, why?
+
+# Ecoli_metadata <- read.table("data/Ecoli_metadata_d1.txt",header = TRUE)
+
+# Ecoli_metadata <- read.table("data/Ecoli_metadata_d1.txt",header = TRUE, sep = "\t")
+
+
+```
+
+```{r}
+# the space between "Genome" and "size" may be a problem
+#   as a rule of thumb never add spaces between column names, use "." or "_"
+
+# Another problem are the empty, invisible spaces: line 31 contains a random comment, and since the function tries to force a row with 7 columns, it fails when it reaches this line  
+
+# argument fill = TRUE solves this
+# If TRUE then in case the rows have unequal length, blank fields are implicitly added.
+
+Ecoli_metadata <- read.table("data/Ecoli_metadata_d1.txt",header = TRUE, sep = "\t", fill = TRUE)
+tail(Ecoli_metadata)
+
+# read.delim already has this arguments as default
+Ecoli_metadata <- read.delim("data/Ecoli_metadata_d1.txt")
+tail(Ecoli_metadata)
+
+# to ignore line 31, because it is only important for you, not for calculations, we can use the comment character
+Ecoli_metadata <- read.delim("data/Ecoli_metadata_d1.txt", comment.char = '#')
+tail(Ecoli_metadata)
+
+# Let's try the read.csv() version
+Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE)
+tail(Ecoli_metadata_csv)
+
+Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE, comment.char = '#')
+tail(Ecoli_metadata_csv)
+```
+
+
+### Activity 2
+
+**a) More on importing files:**
+
+- a.1) Import Ecoli_metadata_d2.csv usind read.csv() to a table named Ecoli_metadata_csv2. Print the first 8 rows of Ecoli_metadata_csv and Ecoli_metadata_csv2. Explain what happened.
+
+- a.2) Ecoli_metadata_csv has one empty column and one empty and one empty row, why? Remove this column and row (use indexes)?
+
+--------
+
+Before moving forward, let's delete all working environment
+```{r}
+# using RStudio, just click in the 'broom' button on the top right panel, or use ...
+
+rm(list = ls())
+
+```
+
+<br/>
+
+#### **1.4. Factors and missing data** ####
+
+
+```{r}
+
+feeders <- read.csv("data/Feeder_observations.csv", header=T, check.names = FALSE)
+
+```
+<br/>
+    
+In this [project with hummingbirds](https://doi.org/10.1098/rspb.2018.2295), authors aimed to study the effect of food provisioning by humans on animal nutrition and exposure to novel pathogens. By experimentally manipulating bird visitation to feeders, authoers compared microbial communities and sucrose solution characteristics over time and compared this to hummingbird bill and faecal samples, and to floral nectar.
+
+README_for_Feeder_observations.docx has the metadata for Feeder_observations.csv
+
+<br/>
+
+```{r}
+# re-check the elements in 
+str(feeders)
+
+```
+<br/>
+
+Most elements are classified as **Factors**:
+
+    Factors are used to represent categorical data. Factors can be ordered (e.g.; small, medium, large) or unordered (e.g.; blond, brunette, ginger) and are an important class for statistical analysis and for plotting.
+
+    Once created, factors can only contain a pre-defined set of values known as levels (stored as numeric and for instance, important for plots, regression analysis, ...). By default, R always sorts levels in alphabetical order.
+    
+    Most columns containing character data are considered factors by default when imported in a table (use stringsAsFactors = FALSE to avoid this, if necessary)  
+
+```{r}
+# first let's change the column names to less 'error-prone' names
+names(feeders)
+names(feeders)[c(1,5,6,9,10,11,12,13)] <- c("TRIAL","DurGROWTH","FEED.N","N.HUMM","N.INSECT","FEED.WT","FEED.TEMP", "ENV.TEMP")
+
+# when applying str() to the feeders we see a lot of columns with factors, but some should be numeric 
+summary(feeders$N.HUMM)
+# to convert a factor to a numeric, first convert to character and then to numeric
+feeders$N.HUMM <- as.numeric(as.character(feeders$N.HUMM))
+
+summary(feeders$N.HUMM) # function summary for a numeric vector should give this output
+
+# other variables should be transformed too
+feeders$FEED.TEMP <- as.numeric(as.character(feeders$FEED.TEMP))
+feeders$pH <- as.numeric(as.character(feeders$pH))
+feeders$OD_1 <- as.numeric(as.character(feeders$OD_1))
+feeders$OD_2 <- as.numeric(as.character(feeders$OD_2))
+feeders$OD_avg <- as.numeric(as.character(feeders$OD_avg))
+feeders$FEED.WT <- as.numeric(as.character(feeders$FEED.WT))
+feeders$NOTES <- as.character(feeders$NOTES)
+
+# when applying str() to the feeders the variable TREATMENT is described as a Factor w/ 4 levels: '.', 'cage', 'net', 'open' 
+levels(feeders$TREATMENT)
+
+# the '.' factor in this dataset is related to 'not available' data and should not be considered. Therefore we need to convert it to NA
+levels(feeders$TREATMENT)[1]<- NA
+
+# to re-order the factor and set a reference 
+
+feeders$TREATMENT <- relevel(feeders$TREATMENT, ref="open")
+
+#other factors need some revision too, due to the amount of missing data
+levels(feeders$SITE)[1]<- NA
+levels(feeders$OBSERVER)[1]<- NA
+levels(feeders$N.INSECT)[1]<- NA
+levels(feeders$TIME)[1]<- NA
+
+# to save all R objects obtained so far
+save.image(file = 'feeders.RData')
+
+#boxplot(formula = pH ~ TREATMENT,data = feeders )
+```
+
+
