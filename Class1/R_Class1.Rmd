@@ -1,0 +1,489 @@
+---
+title: "Class 1 - R commands 101"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+
+## 1. The very basics of R ##
+
+    All operations in R are performed in the console.
+    R console is a powerfull calculator...
+
+<br/>
+
+#### **1.1. The very basic mathematical operarions can be performed in R** ####
+```{r}
+10+5; 10-5
+4*6
+16/4
+2^8
+2*5-(2^5)/8
+```
+<br/>
+
+#### **1.2 Logical operarions are also possible:** ####
+(not relevant for now, but this will be important for programming) [upcoming class]
+
+```{r}
+2 == 2 # is it equal?
+3 > 2 # is it larger?
+3 < 1 # is it smaller?
+4 != 0 # is it not equal?
+```
+<br/>
+
+## 2. Creating objects (or variables) ##
+
+    In R, most data is commonly stored in variables
+    These objects are saved in R backstage (workspace)
+    With RStudio it's possible to see these objects in the Environment section (right side)
+
+<br/>
+
+#### **2.1 Let's create some objects** ####
+```{r}
+# objects are assigned using the "<-" characters
+x <- 1
+y <- 2
+str1 <- "hello world"
+
+# The "=" character may also be used but it's not recommended for the sake of clarity
+
+x = 45
+str1 = "bye world"
+
+# now objects x and str1 were overwritten 
+```
+<br/>
+
+```{r}
+# to see what's inside an object, simply type the name
+
+x; y; str1
+
+```
+
+<br/>
+
+#### **2.2. Mathematical operations are also applied to objects** ####
+```{r}
+z <- x+y
+z
+z <- z + 1
+z
+```
+<br/>
+
+We have now covered four important components in R:
+
+      - numeric data: 1, 45, 667
+      - character data: "hello world", "22"
+      - objects: x, str1
+      - operators: +, -, <, >, !=, ==, <-
+    
+Note:
+    
+    Object names can be given using letters and numbers, but should never start with numbers
+    Other characters allowed are "_" and "." 
+    
+    Operations between character and numeric objects are not possible
+    
+```{r}
+
+x <- 23
+y <- 45
+
+str1 <- "hello"
+str2 <- "34"
+
+x + y
+
+# the following operations are not allowed
+# y - str2
+# str2 + str1
+```
+
+<br/>
+
+## 3. Functions ##
+
+    A function encloses a group of commands build to automate a specific operation
+    Costumized functions can be built by the user
+    R has a lot of functions already available
+    
+    Calling a function on the console: myFunction(argument, ...)
+    Never add space between function name and parenthesis
+
+<br/>
+
+#### **3.1 Some basic functions** ####
+```{r}
+#How to get a list of the objects stored in our workspace
+ls() 
+#or
+objects()
+
+```
+<br/>
+
+```{r}
+# remove an object from the workspace
+newObjectToDelete <- "I'm a temporary file"
+ls()
+rm(newObjectToDelete) 
+ls()
+
+```
+<br/>
+```{r}
+#check the class of the object x
+class(x)
+#check the class of the object str1
+class(str1)
+
+#check the class of the and expression
+class(2 > 5)
+```
+
+
+<br/>
+
+#### **3.2 Other functions are usefull for mathematical operations:** ####
+
+```{r}
+# square root
+sqrt(1024) 
+
+# mean 
+example_vector <- c(1.333, 1.445, 1.555, 1.431) # the c(..., ...) will be explained afterwards
+
+mean(example_vector)
+#... and standard deviation
+sd(example_vector)
+
+#exponential
+exp(2) #e^2
+
+```
+
+<br/>
+
+#### **3.3 Most built-in functions have options (arguments), often with default values** ####
+```{r}
+#logarithm
+# type ?log in the console to see the manual of log() function
+
+log(4) # default base value is exp(1)
+log(4, base = exp(1))
+
+log(4, base = 10)
+log10(4)  # log function comes in different flavours, such as log10
+
+# round a decimal number
+number2round <- 2.633672
+
+round(number2round, digits = 4)
+round(2.633672) # default value for digits is 0
+round(2.633672, digits = 0)
+```
+
+<br/>
+
+Note:
+
+    To get help for any built-in functions just type in the console:
+      - ?round
+      - help(round)
+
+<br/>
+
+#### **3.4 How to create a new function** ####
+
+Costum function can be created using the following format:
+
+*myFunction <- function(arg1, arg2, ..., argN) { \n
+  < any formula or script that usus the arguments >
+  return(value)
+}*
+
+Here are some examples:
+```{r}
+# calculate the standard error of the mean
+# in this case, 'x' will be the argument for the function to work on
+
+mySEM <- function(x){
+  return(sd(x) / sqrt(length(x)))
+}
+
+# after running this commands the function names appear in the workspace environment
+
+mySEM(example_vector) 
+
+```
+```{r}
+# Another Example:
+# fahrenheit_to_celsius converter 
+
+fahrenheit_to_celsius <- function(temp_F) {
+  temp_C <- (temp_F - 32) * 5 / 9
+  return(temp_C)
+}
+
+fahrenheit_to_celsius(102)
+
+# Adding arguments with default values
+
+fahrenheit_to_celsius <- function(temp_F, d = 5) {
+  temp_C <- (temp_F - 32) * 5 / 9
+  temp_C <- round(temp_C, digits = d)
+  return(temp_C)
+}
+
+fahrenheit_to_celsius(100)
+
+# 'd' is a positional argument with a default value. 
+# If another value is given in the second position, this will replace the default
+ 
+fahrenheit_to_celsius(100, 3)
+
+# for clarity, it is better to call arguments by their name
+fahrenheit_to_celsius(100, d = 3)
+```
+
+<br/>
+
+#### **3.5 Other relevant functions** ####
+
+```{r}
+getwd() # get working directory
+dir <- getwd() 
+dir
+
+# to set a new working directory use setwd(/path/to/newDirectory/)
+```
+
+<br/> 
+
+## 4. Data structures: Vectors and Data frames
+
+    Numeric and/or character data can be stored in structured objects
+    These include vectors, matrices and data frames, among others
+
+<br/>
+
+#### **4.1 Vectors** ####
+
+    Vectors are homogeneous data structures, organized in 1 dimension
+    
+<br/>
+
+```{r}
+
+x <- c(34, 35, 33, 34) # Combine Values into a Vector or List
+```
+
+
+```{r}
+mean(x)
+min(x)
+max(x)
+log10(x)
+```
+
+
+```{r}
+s <- c( min(x),max(x) )
+s
+```
+
+<br/>
+
+
+
+```{r}
+x <- c(34, 35, 33, 34)
+y <- c("ITQB", "IGC", "IMM")
+w <- c("ITQB", 10, "IGC", 34)
+
+class(w)
+class(x)
+class(y)
+
+# a mixed vector will automatically convert all elements to character
+w
+```
+
+<br/>
+
+**4.1.2 Operations on vectors**
+
+
+```{r}
+# creating some vectors
+v1 <- c(6,7,8)
+v2 <- c(3,4,5)
+c1 <- c( "itqb", "igc", "imm", 3)
+```
+
+
+*for numeric vectors*
+```{r}
+# multipy all elements by a constant
+v1 * 3 
+
+# operation may be also applied to vectors of the same length 
+v1 + v2
+
+```
+
+*for character vectors*
+
+```{r}
+toupper( c1 )
+```
+
+<br/>
+
+#### **4.2 Data Frames** #### 
+
+
+    A data frame is a heterogeneous data structure, organized in 2 dimensions 
+    
+    It's used to store tables, particularly if they have mixed  data types (e.g.  character and numeric).
+
+    Another common format to store data is a *matrix*, which should be only used to store data in a single form (character or numeric).  
+
+    If these conditions are guarenteed one can change the format of a given table from dataframe to matrix (or vice-versa) using these functions: as.data.frame(myMatrix) or as.matrix(myTable)
+
+<br/>
+
+**4.2.1 Tables can be imported from files, but you can make your own tables directly in R**
+```{r}
+var1 <- c( "John", "Paul", "George", "Ringo", "Geri", "Mel B", "Mel C", "Emma", "Victoria")
+var2 <- c( 123456, 234567, 345678, 456789, 344536, 223443, 554345, 234674, 234564)
+var3 <- c( 8.5, 9.0, 5.0, 6.75, 9.9, 9.6, 5.3, 7.75, 5.8)
+var4 <- c( "Male", "Male", "Male", "Male", "Female", "Female", "Female", "Female", "Female")
+#use function data.frame() to create a new table
+classroom <- data.frame( ID=var2, Score=var3, Gender=var4 ) 
+
+#use function colnames() and rownames() to retrieve column and row names respectively
+colnames(classroom)
+rownames(classroom)
+
+# rownames() may also be used to define new names for the rows
+rownames( classroom ) <- var1
+rownames(classroom)
+
+# check the table by printing only some lines
+head(classroom) # first six lines
+tail(classroom) # last six lines
+```
+
+
+<br/>
+
+#### **4.3 Getting Data from Vectors and Data Frames** #### 
+
+To explore a vector or dataframe (or matrix), use square brackets and add indexes inside
+```{r}
+# to get a given value from a vector or dataframe, indexes can be used 
+
+# what's the second value of vector c1?
+c1[2]
+c1[c(2,3)]
+```
+
+
+```{r}
+classroom[1]
+# in data frames you can explore the 2 dimensions
+# usinf the square brackets and the comma [ rowIndex , columnIndex ]
+classroom[,1]
+classroom[1,]
+classroom[1,2]
+```
+
+
+```{r}
+#instead of using indexes, you may also use column and/or rownames
+classroom["Paul","Score"]
+
+# to get all the columns of a given line, we leave empty the side after the comma
+classroom["Paul", ]
+
+```
+
+
+```{r}
+
+# an alternative to get values based on the column name usesthe $ symbol ... myTable$columnA
+# to get all values from column ID
+classroom$ID 
+
+# why is this relevant? 
+# this is a good way to filter or access data according to the content of the cells
+# e.g. 
+#to access the all the elements of a given line, for ID 234567
+ 
+classroom[classroom$ID == 234567, ]
+
+# get a new table for students with score higher than 7
+good_classroom <- classroom[classroom$Score >= 7, ]
+good_classroom
+
+# get a new table just with ID and Score
+classroom_short <- classroom[ , c(1,2)]
+classroom_short 
+# or
+# classroom_short <- classroom[ , c("ID","Score")]
+```
+
+### Activity 1
+
+**a) Functions and vectors:**
+
+- a.1) What is the result of the following commands (try to guess without running the code):
+    - var1[c(1,4)]
+    - var1[1,4]
+    - var1[5:9]
+    - var1[5:length(var1)]
+    - var1[5:(length(var1)-1)]
+    - var1[5:length(var1)-1]
+    - var1[order(var1)]
+
+- a.2) Write a function called edges() that takes a vector of variable size and returns a vector with the first and the last elements. 
+
+```{r}
+# Some help:
+# If the variable v refers to a vector, then v[1] is the vector’s first element and v[length(v)] is its last (the function length returns the number of elements in a vector). 
+
+```
+
+
+<br/>
+
+**b) Dataframes:**
+The following command will create a data frame with randomized data:
+```{r}
+RECORDS <- data.frame(
+ID=seq(from=1, to=40, by=1),
+Gender=c(rep("Male",times=20),rep("Female",times=20)), 
+Age=round(rnorm(40, mean=55, sd=5),digits=0),
+Weight=c(rnorm(20, mean=70, sd=10),rnorm(20, mean=70, sd=15))
+)
+```
+
+- b.1) There are many functions used in this command, 5 to be more exact.
+    - Can you identify them and discover what they do?
+- b.2) Take a look at the first 10 rows of RECORDS 
+    - *hint: type ?head and check the arguments taken by the function* 
+- b.3) Get a new table just for women and another just with columns Age and Gender
+- b.4) Select only the individuals with score higher than the mean score 
+- b.5) Select only the men with a score higher than 70 and age lower than 55 (Google "using and or in R")
+- b.6) Order/sort table by weight (Google it)
+
+--------
