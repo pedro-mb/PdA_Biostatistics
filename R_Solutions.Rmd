@@ -1,0 +1,185 @@
+---
+title: "Activities - Solution"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Activity 1
+
+**a) Functions and vectors:**
+
+**- a.1) What is the result of the following commands (try to guess without running the code):**
+
+```{r}
+var1 <- c( "John", "Paul", "George", "Ringo", "Geri", "Mel B", "Mel C", "Emma", "Victoria")
+
+var1[c(1,4)] # get first and fourth element of var1
+# var1[1,4] # this coomand will fail since a vector is not two dimensional
+
+var1[5:9] # get elements from positions 5 to 9
+
+var1[5:length(var1)] # get element from positions 5 to the end of the vector
+
+# the importance of using '()'
+var1[5:(length(var1)-1)] # get elements from 5th to 8th position
+var1[5:length(var1)-1] # get element from 4th to 8th
+
+var1[order(var1)] # order elements  
+```
+
+
+
+**- a.2) Write a function called edges() that takes a vector of variable size and returns a vector with the first and the last elements.** 
+
+```{r}
+
+# Two Solution similar solutions
+edges1 <- function(v) {
+  first <- v[1]
+   last <- v[length(v)]
+   answer <- c(first, last)
+   return(answer)
+}
+
+# or
+
+edges2 <- function(v) {
+  edge <- c(v[1], v[length(v)])
+  return(edge)
+}
+
+vector1 <- c("first", "second", "third", "fourth", "fifth", "last")
+vector2 <- c(16, 21, 43, 67, 44, 35, 49, 33, 59, 33, 20, 30)
+
+edges1(vector1)
+edges1(vector2)
+edges2(vector1)
+edges2(vector2)
+```
+
+
+<br/>
+
+**b) Dataframes:**
+The following command will create a data frame with randomized data:
+```{r}
+RECORDS <- data.frame(
+ID=seq(from=1001, to=1040, by=1),
+Gender=c(rep("Male",times=20),rep("Female",times=20)), 
+Age=round(rnorm(40, mean=55, sd=5),digits=0),
+Weight=c(rnorm(20, mean=70, sd=10),rnorm(20, mean=70, sd=15))
+)
+```
+
+**- b.1) There are many functions used in this command, 5 to be more exact.**
+  
+  - Can you identify them and discover what they do?
+    - *?data.frame* - creates a dataframe object
+    - *?seq* - generates sequences
+    - *?rep* - replicates the values of a given argument
+    - *?round* - rounds the decimal places of a number
+    - *?rnorm* - random generation for the normal distribution with mean equal to mean and standard deviation equal to sd
+
+<br/>
+
+**- b.2) Take a look at the first 10 rows of RECORDS **
+```{r}
+head(RECORDS, n= 10)
+
+```
+
+<br/>
+
+**- b.3) Get a new table just for women and another just with columns Gender and Age**
+
+```{r}
+RECORDS_women <- RECORDS[RECORDS$Gender == "Female",]
+head(RECORDS_women)
+```
+
+```{r}
+RECORDS_ageGender <- RECORDS[,c('Gender','Age')]
+head(RECORDS_ageGender)
+```
+
+<br/>
+
+**- b.4) Select only the individuals with score higher than the mean weight **
+
+```{r}
+# doing it step by step, first calculate the mean and save it in an object
+meanWeigth <- mean(RECORDS[,4]) 
+#or
+meanWeigth <- mean(RECORDS[,"Weight"]) 
+
+# them use the value to filter  
+RECORDS[RECORDS$Weight > meanWeigth, ]
+
+# quick alternative 
+
+RECORDS[RECORDS$Weight > mean(RECORDS[,"Weight"]) , ]
+```
+
+<br/>
+
+**- b.5) Get the IDs of the men with a weight higher than 70 AND age lower than 55 **
+
+```{r}
+#first check if seletion worked
+RECORDS[RECORDS$Gender == "Male" & RECORDS$Age < 55 & RECORDS$Weight > 70 , ]
+
+# toget the IDs only 
+RECORDS[RECORDS$Gender == "Male" & RECORDS$Age < 55 & RECORDS$Weight > 70 , "ID"]
+
+```
+
+<br/>
+
+**- b.6) Order/sort table by weight, in increasing order (Google it) and get the 6 heaviest individuals**
+
+```{r}
+# function order() only outputs the ordered indexes of the elements to be ordered
+order(RECORDS$Weight)
+
+tail(RECORDS[order(RECORDS$Weight) , ])
+
+
+```
+
+<br/>
+
+**- b.7) Order/sort table by weight, in decreasing order (Google it)**
+
+```{r}
+
+head(RECORDS[order(RECORDS$Weight, decreasing = TRUE) , ])
+
+```
+
+--------
+
+### Activity 2
+
+**a) More on importing files:**
+
+- a.1) Import Ecoli_metadata_d2.csv usind read.csv() to a table named Ecoli_metadata_csv2. Print the first 8 rows of Ecoli_metadata_csv and Ecoli_metadata_csv2. Explain what happened.
+
+```{r}
+Ecoli_metadata_csv2 <- read.csv("data/Ecoli_metadata_d2.csv", header = TRUE, comment.char = '#')
+
+head(Ecoli_metadata_csv2, n=8)
+head(Ecoli_metadata_csv, n=8)
+
+# column clade is split because without the brackets in (C1,C2), the comma is perceived as a separator. Usually when a table is saved from excel as .csv, situations like these are saved as "(C1,C2)". Yet, other softwares may not do this automatically, so avoiding the use of separator symbols such as ',' is advised.   
+```
+<br/>
+
+- a.2) Ecoli_metadata_csv has one empty column and one empty and one empty row, why? Remove this column and row (use indexes)?
+
+```{r}
+tail(Ecoli_metadata_csv)
+Ecoli_metadata_csv2 <- Ecoli_metadata_csv[c(1:nrow(Ecoli_metadata_csv)-1), c(1:ncol(Ecoli_metadata_csv)-1)]
+tail(Ecoli_metadata_csv2)
+```
+
