@@ -1,0 +1,58 @@
+---
+title: "Activities - Solution"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Activity 2
+
+**a) More on importing files:**
+
+- a.1) Import Ecoli_metadata_d2.csv usind read.csv() to a table named Ecoli_metadata_csv2. Print the first 8 rows of Ecoli_metadata_csv and Ecoli_metadata_csv2. Explain what happened.
+
+```{r}
+Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE, comment.char = '#')
+Ecoli_metadata_csv2 <- read.csv("data/Ecoli_metadata_d2.csv", header = TRUE, comment.char = '#')
+
+head(Ecoli_metadata_csv2, n=8)
+head(Ecoli_metadata_csv, n=8)
+
+# column clade is split because without the brackets in (C1,C2), the comma is perceived as a separator. Usually when a table is saved from excel as .csv, situations like these are saved as "(C1,C2)". Yet, other softwares may not do this automatically, so avoiding the use of separator symbols such as ',' is advised.   
+```
+<br/>
+
+- a.2) Ecoli_metadata_csv has one empty column and one empty and one empty row, why? Remove this column and row (use indexes)?
+
+```{r}
+tail(Ecoli_metadata_csv)
+Ecoli_metadata_csv2 <- Ecoli_metadata_csv[c(1:nrow(Ecoli_metadata_csv)-1), c(1:ncol(Ecoli_metadata_csv)-1)]
+tail(Ecoli_metadata_csv2)
+```
+
+- a.3) Calculate the mean for variable Genome.size. How can you solve the problem found?
+
+```{r}
+# Column Genome.size has one empty cell that is converted to NA after importing. 
+#mean and other mathematical operations cannot be calculated when NA is missing. 
+# to solve this use argument na.rm = TRUE
+mean(Ecoli_metadata_csv$Genome.size, na.rm = TRUE)
+```
+
+- a.4) With function grepl() you can search for patterns in a vector.   How can you use this function to filter Ecoli_metadata_csv to get only the lines of samples starting with "ZDB"?
+
+- *hint: grep("pattern", vector1) would retrieve the index of vector elements contaning the word "pattern)"*
+
+```{r}
+# same principle as using function order()
+Ecoli_metadata_csv[grepl("ZDB", Ecoli_metadata_csv$sample),]
+Ecoli_metadata_csv[grep("ZDB", Ecoli_metadata_csv$sample),]
+
+#other examples
+v1 <- c("ABC","ABF","BFG","ACF", "ABR","FAB","FABM")
+
+v1[grepl("AB", v1)]   # retrieve only elements containing AB
+
+v1[grepl("^AB", v1)]   # retrieve only elements STARTING WITH AB
+```
+
