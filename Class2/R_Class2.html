@@ -272,6 +272,11 @@ head(root_l1)</code></pre>
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["line"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["length.cm..1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["length.cm..2"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["length.cm..3"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Lat_roots"],"name":[5],"type":["int"],"align":["right"]},{"label":["mean_length"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"Col-0","2":"5.968","3":"5.941","4":"5.912","5":"10","6":"5.940333","_rn_":"1"},{"1":"Col-0","2":"5.334","3":"5.266","4":"5.271","5":"5","6":"5.290333","_rn_":"2"},{"1":"Col-0","2":"4.553","3":"4.566","4":"4.638","5":"5","6":"4.585667","_rn_":"3"},{"1":"Col-0","2":"5.144","3":"5.196","4":"5.153","5":"6","6":"5.164333","_rn_":"4"},{"1":"Col-0","2":"5.439","3":"5.482","4":"5.346","5":"7","6":"5.422333","_rn_":"5"},{"1":"Col-0","2":"5.843","3":"5.918","4":"5.864","5":"11","6":"5.875000","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<pre class="r"><code># to add a new line below the last line of the table, you can use rbind() function.
+# you only need to guarantee that the new line has the same length and structure has the other rows. e.g.
+
+#newline &lt;- c(&quot;Col-0&quot;, 5.000, 5.000, 5.1000, 10, 5.0500)
+#root_l2 &lt;- rbind(root_l1, newline)</code></pre>
 <p><br /></p>
 <pre class="r"><code># the elements of each column in root_l are in fact one dimension vectors of size 40
 # to calculate lateral root density just divide one column 5 by column 6
@@ -350,7 +355,7 @@ tail(Ecoli_metadata_csv)</code></pre>
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["sample"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["generation"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["clade"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["strain"],"name":[4],"type":["fctr"],"align":["left"]},{"label":["cit"],"name":[5],"type":["fctr"],"align":["left"]},{"label":["run"],"name":[6],"type":["fctr"],"align":["left"]},{"label":["Genome.size"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["X"],"name":[8],"type":["lgl"],"align":["right"]}],"data":[{"1":"ZDB99","2":"36000","3":"C1","4":"REL606","5":"minus","6":"SRR098037","7":"4.61","8":"NA","_rn_":"26"},{"1":"ZDB107","2":"38000","3":"Cit+","4":"REL606","5":"plus","6":"SRR098038","7":"4.79","8":"NA","_rn_":"27"},{"1":"ZDB111","2":"38000","3":"C2","4":"REL606","5":"minus","6":"SRR098039","7":"4.62","8":"NA","_rn_":"28"},{"1":"REL10979","2":"40000","3":"Cit+","4":"REL606","5":"plus","6":"SRR098029","7":"4.78","8":"NA","_rn_":"29"},{"1":"REL10988","2":"40000","3":"C2","4":"REL606","5":"minus","6":"SRR098030","7":"4.62","8":"NA","_rn_":"30"},{"1":"","2":"#This comment is highly important","3":"","4":"","5":"","6":"","7":"NA","8":"NA","_rn_":"31"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<pre class="r"><code>Ecoli_metadata_csv &lt;- read.csv(&quot;data/Ecoli_metadata_d1.csv&quot;, header = TRUE, comment.char = '#')
+<pre class="r"><code>Ecoli_metadata_csv &lt;- read.csv(&quot;data/Ecoli_metadata_d1.csv&quot;, header = TRUE, comment.char = '#', sep = &quot;,&quot;)
 tail(Ecoli_metadata_csv)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -362,8 +367,11 @@ tail(Ecoli_metadata_csv)</code></pre>
 <h3>Activity 2</h3>
 <p><strong>a) More on importing files:</strong></p>
 <ul>
-<li><p>a.1) Import Ecoli_metadata_d2.csv usind read.csv() to a table named Ecoli_metadata_csv2. Print the first 8 rows of Ecoli_metadata_csv and Ecoli_metadata_csv2. Explain what happened.</p></li>
+<li><p>a.1) Import Ecoli_metadata_d2.csv using read.csv() to a table named Ecoli_metadata_csv2. Print the first 8 rows of Ecoli_metadata_csv and Ecoli_metadata_csv2. Explain what happened.</p></li>
 <li><p>a.2) Ecoli_metadata_csv has one empty column and one empty and one empty row, why? Remove this column and row (use indexes)?</p></li>
+<li><p>a.3) Calculate the mean for variable Genome.size. How can you solve the problem found?</p></li>
+<li><p>a.4) With function grepl() you can search for patterns in a vector. How can you use this function to filter Ecoli_metadata_csv to get only the lines of samples starting with “ZDB”?</p></li>
+<li><p><em>hint: grep(“pattern”, vector1) would retrieve the index of vector elements contaning the word “pattern)”</em></p></li>
 </ul>
 <hr />
 <p>Before moving forward, let’s delete all working environment</p>

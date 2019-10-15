@@ -92,6 +92,11 @@ head(root_l1)
 root_l$mean_length <- rowMeans(root_l[,2:4])
 head(root_l1)
 
+# to add a new line below the last line of the table, you can use rbind() function.
+# you only need to guarantee that the new line has the same length and structure has the other rows. e.g.
+
+#newline <- c("Col-0", 5.000, 5.000, 5.1000, 10, 5.0500)
+#root_l2 <- rbind(root_l1, newline)
 ```
 <br/>
 
