@@ -93,8 +93,9 @@ root_l$mean_length <- rowMeans(root_l[,2:4])
 head(root_l1)
 
 # to add a new line below the last line of the table, you can use rbind() function.
-# you only need to guarantee that the new line has the same length and structure has the other rows. e.g.
+# you only need to guarantee that the new line has the same length and structure has the other rows. 
 
+#e.g.
 #newline <- c("Col-0", 5.000, 5.000, 5.1000, 10, 5.0500)
 #root_l2 <- rbind(root_l1, newline)
 ```
@@ -147,7 +148,8 @@ write.csv(root_l,file="data/new_root_length.csv")
 # the space between "Genome" and "size" may be a problem
 #   as a rule of thumb never add spaces between column names, use "." or "_"
 
-# Another problem are the empty, invisible spaces: line 31 contains a random comment, and since the function tries to force a row with 7 columns, it fails when it reaches this line  
+# Another problem are the empty, invisible spaces: line 31 contains a random comment, 
+#and since the function tries to force a row with 7 columns, it fails when it reaches this line  
 
 # argument fill = TRUE solves this
 # If TRUE then in case the rows have unequal length, blank fields are implicitly added.
@@ -159,7 +161,9 @@ tail(Ecoli_metadata)
 Ecoli_metadata <- read.delim("data/Ecoli_metadata_d1.txt")
 tail(Ecoli_metadata)
 
-# to ignore line 31, because it is only important for you, not for calculations, we can use the comment character
+
+# to ignore line 31, because it is only important for you, not for calculations, 
+#we can use the comment character
 Ecoli_metadata <- read.delim("data/Ecoli_metadata_d1.txt", comment.char = '#')
 tail(Ecoli_metadata)
 
@@ -167,7 +171,8 @@ tail(Ecoli_metadata)
 Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE)
 tail(Ecoli_metadata_csv)
 
-Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE, comment.char = '#', sep = ",")
+Ecoli_metadata_csv <- read.csv("data/Ecoli_metadata_d1.csv", header = TRUE, 
+                               comment.char = '#', sep = ",")
 tail(Ecoli_metadata_csv)
 ```
 
@@ -224,20 +229,26 @@ str(feeders)
 
 Most elements are classified as **Factors**:
 
-    Factors are used to represent categorical data. Factors can be ordered (e.g.; small, medium, large) or unordered (e.g.; blond, brunette, ginger) and are an important class for statistical analysis and for plotting.
+  Factors are used to represent categorical data. Factors can be ordered (e.g.; small, medium, large) or unordered (e.g.; blond, brunette, ginger) and are an important class for statistical analysis and for plotting.
 
-    Once created, factors can only contain a pre-defined set of values known as levels (stored as numeric and for instance, important for plots, regression analysis, ...). By default, R always sorts levels in alphabetical order.
+  Once created, factors can only contain a pre-defined set of values known as levels (stored as numeric and for instance, important for plots, regression analysis, ...). By default, R always sorts levels in alphabetical order.
     
-    Most columns containing character data are considered factors by default when imported in a table (use stringsAsFactors = FALSE to avoid this, if necessary)  
+  Most columns containing character data are considered factors by default when imported in a table (use stringsAsFactors = FALSE to avoid this, if necessary)  
 
 ```{r}
 # first let's change the column names to less 'error-prone' names
-names(feeders)
-names(feeders)[c(1,5,6,9,10,11,12,13)] <- c("TRIAL","DurGROWTH","FEED.N","N.HUMM","N.INSECT","FEED.WT","FEED.TEMP", "ENV.TEMP")
 
-# when applying str() to the feeders we see a lot of columns with factors, but some should be numeric 
+names(feeders)
+names(feeders)[c(1,5,6,9,10,11,12,13)] <- c("TRIAL","DurGROWTH","FEED.N","N.HUMM","N.INSECT",
+                                            "FEED.WT","FEED.TEMP", "ENV.TEMP")
+
+# when applying str() to the feeders we see a lot of columns with factors, but some should
+# be numeric 
+
 summary(feeders$N.HUMM)
+
 # to convert a factor to a numeric, first convert to character and then to numeric
+
 feeders$N.HUMM <- as.numeric(as.character(feeders$N.HUMM))
 
 summary(feeders$N.HUMM) # function summary for a numeric vector should give this output
@@ -250,11 +261,16 @@ feeders$OD_2 <- as.numeric(as.character(feeders$OD_2))
 feeders$OD_avg <- as.numeric(as.character(feeders$OD_avg))
 feeders$FEED.WT <- as.numeric(as.character(feeders$FEED.WT))
 feeders$NOTES <- as.character(feeders$NOTES)
+feeders$DurGROWTH <- as.factor(feeders$DurGROWTH)
 
-# when applying str() to the feeders the variable TREATMENT is described as a Factor w/ 4 levels: '.', 'cage', 'net', 'open' 
+# when applying str() to the feeders the variable TREATMENT is described as 
+# a Factor w/ 4 levels: '.', 'cage', 'net', 'open' 
+
 levels(feeders$TREATMENT)
 
-# the '.' factor in this dataset is related to 'not available' data and should not be considered. Therefore we need to convert it to NA
+# the '.' factor in this dataset is related to 'not available' data and should
+# not be considered. Therefore we need to convert it to NA
+
 levels(feeders$TREATMENT)[1]<- NA
 
 # to re-order the factor and set a reference 
@@ -267,10 +283,32 @@ levels(feeders$OBSERVER)[1]<- NA
 levels(feeders$N.INSECT)[1]<- NA
 levels(feeders$TIME)[1]<- NA
 
+# Create a new feeders table with data from both sites (Glinda and Rita) and 2 DurGrowth levels (1 and 7) for OD_avg and pH
+
+feeders_select <- feeders[feeders$SITE %in% c("Glinda","Rita") & feeders$DurGROWTH %in% c(1,7), ] 
+
+# when filtering a data-set with factor, these need to be adjusted  
+
+levels(feeders_select$DurGROWTH)
+levels(feeders_select$SITE)
+levels(feeders_select$TREATMENT)
+
+# the new feeders_select only has two levels in DurGROWTH, yet 7 levels are shown.
+# the new feeders_select only has three levels in TRE, yet 7 levels are shown.
+# therefore we need to ajust the factors
+
+feeders_select$DurGROWTH <- factor(feeders_select$DurGROWTH)
+feeders_select$TREATMENT <- factor(feeders_select$TREATMENT)
+# we could also adjust for other factors, but these are the only one 
+# we're interested for statistical analysis
+
 # to save all R objects obtained so far
 save.image(file = 'feeders.RData')
 
-#boxplot(formula = pH ~ TREATMENT,data = feeders )
+boxplot(formula = OD_avg ~ TREATMENT,data = feeders_select )
+boxplot(formula = OD_avg ~ DurGROWTH,data = feeders_select )
+boxplot(formula = pH ~ TREATMENT,data = feeders_select )
+boxplot(formula = pH ~ DurGROWTH,data = feeders_select )
 ```
 
 
