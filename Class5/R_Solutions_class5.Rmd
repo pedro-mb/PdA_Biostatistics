@@ -1,0 +1,119 @@
+---
+title: "Class 4 - Statistics part II"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+<br/>
+
+#### Activity 5.1 #####
+
+- a.1) Complete the function "sum_eval()", that takes a numeric (integer) vector of any length, sums all the elements and prints "Sum is even" or "Sum is odd".
+
+```{r}
+
+sum_eval <- function(arg){
+   sum.res <- sum(arg)
+   if ( sum.res %% 2 ==0 ) { print("Sum is even") }  else { "Sum is odd" }
+} 
+
+#option with return()
+sum_eval2 <- function(arg){
+   sum.res <- sum(arg)
+   if ( sum.res %% 2 ==0 ) { res <- "Sum is even" }  else { res <- "Sum is odd" }
+   return(res)
+} 
+
+#### test the function
+
+vector_a <- c( 34, 56, 25,64,51, 55, 89)
+vector_b <- c( 78, 43, 90, 64, 3, 34, 89)
+
+sum_eval(vector_a)
+sum_eval2(vector_b)
+
+```
+
+<br/>
+
+- a.2) Complete the function "itqb_search()", that takes a vector of words, of any length, and prints "itqb is present" if "itqb" is one of the words present, or "no hit" if not present. *hint:function tolower converts all character srings to lower case*
+
+
+```{r}
+
+itqb_search <- function( arg ){
+  if ( "itqb" %in% tolower( arg ) ) { 
+     decision <- "itqb is present" 
+   } else { decision <-"no hit"} 
+return(decision)
+}
+
+# test the function
+vector_c <- c("Champalimaud", "IGC", "IMM", "IBMC", "CIBIO")
+vector_d <- c("ITQB", "open", "day")
+itqb_search(vector_c) 
+itqb_search(vector_d) 
+```
+
+<br/>
+
+- a.3) Write a function that takes two arguments, a numeric p-value and a significance value, and evaluates if H0 should be rejected, using alpha of 0.05.
+```{r}
+
+my_significance <- function(pval, alpha) {
+  if (pval < alpha) {
+    decision <- ("we reject the null hypothesis")
+  } else { decision <- "we can't reject the null hypothesis"
+  }
+  return(decision)
+}
+
+my_significance(0.000323, 0.001)
+my_significance(0.323, 0.05)
+
+```
+
+<br/>
+
+- a.4) complete the following function that takes a numeric vector a counts the number of even numbers inside.
+
+```{r}
+myEven <- function( v ) {
+  count = 0
+  for (number in v ) {
+    if ( number %%2 == 0 ) { count = count +1 }
+    }
+  return(count)
+}
+
+vector_a <- c(2,3,6,5,4,56,67,86)
+myEven(vector_a)
+
+```
+
+<br/>
+
+a.5) write a function that takes a vector of numbers higher and lower than 0 and returns another vector only with positive values. 
+
+*hint: you need to create an empty vector before starting the loop*
+*hint: to include 34 in a vector: vector <- c(vector, 34)*
+
+```{r}
+myPositive <- function(v){
+  positive <- c()
+  for (element in v) {
+    if (element > 0){
+      positive <- c(positive, element)
+    }
+  }
+return(positive)
+}
+
+test_vector <- c(-1,2, -3, 5, 6, -15, 56)
+myPositive(test_vector)
+```
+
+

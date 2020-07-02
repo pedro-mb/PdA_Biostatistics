@@ -1,0 +1,189 @@
+---
+title: "Activities - Solution"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+### Activity 3
+
+**a) Hypothesis tests for two populations:**
+
+- a.1) Choose the best way to import file "feeders_select_exercise.csv" and save it to an object named feeders. 
+
+<br/>
+
+This file contains measurements (OD_avg and pH) taken from a sucrose solution present in 10 different bird feeders. Measurements were made at day 1 and at day 7 after changing the solution. The purpose will be to see differences between both days  
+```{r}
+feeders <- read.csv("data/feeders_select_exercise.csv")
+```
+
+<br/>
+
+- a.2) Check the str() to confirm that, al least, both numeric variables (OD_avg and pH) are in fact numeric and not factors. DurGrowth should be a factor.
+
+
+```{r}
+# change DurGROWTH to a factor 
+feeders$DurGROWTH <- factor(feeders$DurGROWTH)
+
+levels(feeders$DurGROWTH)
+```
+
+<br/>
+
+- a.3) Calculate the mean, sd and median of variables pH and OD_avg for day 1 and day 7. 
+
+
+```{r}
+
+by(feeders$OD_avg, feeders$DurGROWTH, mean, na.rm=TRUE)
+by(feeders$OD_avg, feeders$DurGROWTH, median, na.rm=TRUE)
+by(feeders$OD_avg, feeders$DurGROWTH, sd, na.rm=TRUE)
+
+by(feeders$pH, feeders$DurGROWTH, mean, na.rm=TRUE)
+by(feeders$pH, feeders$DurGROWTH, median, na.rm=TRUE)
+by(feeders$pH, feeders$DurGROWTH, sd, na.rm=TRUE)
+
+```
+
+<br/>
+
+- a.4) How many measurement (n) were taken in day 1 and in day 7? 
+
+```{r}
+summary(feeders)
+# 10 measurements for each day
+```
+
+<br/>
+
+- a.5) Is pH data for day 7 and day 1 normally distributed? What about OD_avg? Which type of tests would you use for each variable.
+
+```{r}
+
+# for OD_avg
+shapiro.test(feeders[feeders$DurGROWTH == "7", "OD_avg"])
+shapiro.test(feeders[feeders$DurGROWTH == "1", "OD_avg"])
+
+```
+
+Don't reject H0, OD_avg data is normally distributed
+follow parametric hypothesis tests
+
+<br/>
+
+```{r}
+
+# for pH
+shapiro.test(feeders[feeders$DurGROWTH == "1", "pH"])
+shapiro.test(feeders[feeders$DurGROWTH == "7", "pH"])
+
+# reject HO for day1, pH data is in this day is not normally distributed
+# Unless you have any evidence for the fact that this type of data is,
+# in fact, normally distributed (other samplings from other trials, problem during the 
+# measurements, ...), go for non-parametric tests, even if normality is assumed for day7
+
+```
+
+<br/>
+
+- a.6) Draw a boxplot for pH as function of DurGrowth. Is there something you could to the data to solve the normality issue?
+
+
+```{r}
+boxplot(formula = pH ~ DurGROWTH,data = feeders)
+# maybe remove that one outlier and repeat shapiro-test, but population "day1"
+# doesn't look very simetrical, so sampling could be repeated, eventually 
+# increasing sample n
+```
+
+<br/>
+
+- a.7) measurements in day 1 and day 7 were made always on the same feeder. What kind of strategy should be used for to compare these two days? 
+
+```{r}
+# This can be viewed as a "before and after" situation, so it's paired data 
+```
+
+<br/>
+
+- a.8) Perform the Bartlet test and the t.test/wilcoxon (depending on the normality tests results) to investigate if pH and OD_avg are different between the two days.
+
+*- hint: look at column FEED.N (unique ID of the feeder) to understand the order of the measurements in the table*
+
+```{r}
+# variance Homogeneity
+
+bartlett.test(pH ~ DurGROWTH, data = feeders)
+#variance not homogeneous
+
+```
+
+```{r}
+
+bartlett.test(OD_avg ~ DurGROWTH, data = feeders)
+#variance is homogeneous (for a sign. level of 0.05)
+
+```
+
+```{r}
+
+## Hypothesis tests for OD_avg
+
+# the order of the values for day 1 and 7 allows matching of the pairs,
+# therefore we may use the formulaformula = OD_avg ~ DurGROWTH directly
+
+t.test(formula = OD_avg ~ DurGROWTH, data = feeders, paired = TRUE, var.equal = TRUE)
+
+#or get values in invidivual vectors (confirm the order is correct)
+
+ODday1 <- feeders[feeders$DurGROWTH == 1,"OD_avg"]
+ODday7 <- feeders[feeders$DurGROWTH == 7,"OD_avg"]
+
+t.test(ODday1, ODday7, paired = TRUE, var.equal = TRUE)
+
+#plot for pairs
+library(PairedData)
+pd = paired(ODday1, ODday7)
+plot(pd, type = "profile") + theme_bw()
+
+```
+
+```{r}
+
+## Hypothesis tests for pH
+
+wilcox.test(formula = pH ~ DurGROWTH, data = feeders, paired = TRUE)
+
+# or
+pHday1 <- feeders[feeders$DurGROWTH == 1,"pH"]
+pHday7 <- feeders[feeders$DurGROWTH == 7,"pH"]
+
+wilcox.test(pHday1, pHday7, paired = TRUE)
+
+```
+
+
+```{r}
+# plot for pairs
+
+pd = paired(pHday1, pHday7)
+plot(pd, type = "profile") + theme_bw()
+
+feeders$pH
+```
+
+
+Sampling for day1 yielded very similar values (e.g. 4.25), and the distribution is not very simetrical, which can be a problem for hypothesis tests, even non-parametric
+
+
+Wilcox.test (aka, sum of rank test) works by ordering all values of both samples together, and calculate significance values based on the sum of the ranks of these values, for each sample. 
+
+In case of many ties when ranking the values, (e.g. many equal values) a warning message may appear calling the attention for uncertainty in the p-value
+
+What to do in that case... maybe repeat experiment, increase the n, ...
+
+

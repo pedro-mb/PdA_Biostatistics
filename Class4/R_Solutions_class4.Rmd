@@ -1,0 +1,113 @@
+---
+title: "Class 4 - Statistics part II"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+### Activity 4
+
+**a) Hypothesis tests for 3 or more populations:**
+
+load feeders.RData that you saved in Class2/ folder and repeat the selection indicated in the following box
+
+```{r}
+load("../PdABiostatistics/Class2/feeders.RData")
+
+feeders_select <- feeders[feeders$SITE %in% c("Glide","Rita") & feeders$DurGROWTH == "7", ] 
+
+```
+
+- What is the size of the pH and OD_avg samples for each treatment?
+
+```{r}
+
+# to do this we can write the code to select only the values that we want, 
+# and apply length(). 
+# however, since we have NAs we need to ignore them
+
+# To count the number of cells from each condition containing non-NA values
+# you can use funciton length() and inside use function na.omit()
+
+length( na.omit( feeders_select[feeders_select$TREATMENT == "net","OD_avg"]) )
+
+length( na.omit( feeders_select[feeders_select$TREATMENT == "open","OD_avg"]) )
+
+length( na.omit( feeders_select[feeders_select$TREATMENT == "cage","OD_avg"]))
+
+
+```
+
+
+- a.2) Create a boxplot for pH and another for OD_avg in function of TREATMENT, and plot the corresponding mean values as blue dots
+
+```{r}
+
+mean_pH <- as.vector(by(feeders_select$pH, feeders_select$TREATMENT, mean, na.rm = TRUE))
+boxplot(formula = pH ~ TREATMENT,data = feeders_select )
+points(1:3, mean_pH, pch = 23, cex = 0.75,
+       bg = "blue")
+
+
+mean_OD_avg <- as.vector(by(feeders_select$OD_avg, feeders_select$TREATMENT, mean, na.rm = TRUE))
+boxplot(formula = OD_avg ~ TREATMENT,data = feeders_select )
+points(1:3, mean_OD_avg, pch = 23, cex = 0.75,
+       bg = "blue")
+
+```
+
+- a.2) Run the the Shapiro-wilk test and the Bartlett test for OD_avg for all the three TREATMENT variables.
+
+```{r}
+
+by(feeders_select$OD_avg, feeders_select$TREATMENT, shapiro.test)
+
+# All TREATMENT samples follow a normal distribution
+
+bartlett.test(OD_avg ~ TREATMENT, data = feeders_select)
+
+# samples variances are not homogeneous
+
+```
+
+
+- a.3) Run the adequate ANOVA test to investigate if there are any differences between TREATMENTS for OD_avg  
+
+
+```{r}
+# ANOVA test with no assumption of equal variances
+oneway.test(OD_avg ~ TREATMENT, data = feeders_select)
+
+```
+For a p-value of 0.3186 we conclude that sample means for OD_avg among the three treatments are similar (can't reject H0) 
+
+- a.4) Run the following command. What does function table() do to the data provided ?  
+
+```{r}
+
+tbl_1 <- table(feeders$OBSERVER, feeders$SITE) 
+
+tbl_2 <- table(feeders$OBSERVER, feeders$TREATMENT)
+  
+# Generates a frequency table. In the example, two vectors are prodived 
+# resulting in a 2x2 or 2x3 contingency table. You can also use this function
+# for one single vector and also for numeric data.
+
+```
+
+- a.4) Assume that the OBSERVER  were suppose to be homogeneously distributed in their task to take the samples in all the three types of cages (TREATMENTS). Was this true? Which would be the expected frequencies for the most even distribution?
+
+
+
+```{r}
+obs_chsq <- chisq.test(tbl_2)
+obs_chsq
+obs_chsq$expected
+obs_chsq$observed
+
+# The distribution of observations was homogeneous between the two OBSERVERS
+```
+
+
