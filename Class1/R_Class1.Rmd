@@ -10,7 +10,12 @@ output:
 
 ## 1. The very basics of R ##
 
-    All operations in R are performed in the console.
+    Install R:
+    https://cran.r-project.org/
+    Then install R studio desktop:
+    https://rstudio.com/products/rstudio/download/
+    
+    All operations in R are performed in the console (bottom left corner in R studio).
     R console is a powerfull calculator...
 
 <br/>
